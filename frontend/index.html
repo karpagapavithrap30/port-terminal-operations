@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Terminal Operations</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="logo">
+                ⚓
+                <span>PortOps</span>
+            </div>
+
+            <nav>
+                <a href="#" class="active">Dashboard</a>
+                <a href="#" onclick="showShippingLines()">Shipping Lines</a>
+                <a href="#" onclick="showContainers()">Containers</a>
+                <a href="#" onclick="showYardSlots()">Yard Slots</a>
+                <a href="#" onclick="showCranes()">Cranes</a>
+                <a href="#" onclick="showPurchaseOrders()">Purchase Orders</a>
+                <a href="#" onclick="showSalesOrders()">Sales Orders</a>
+                <a href="#" onclick="showInvoices()">Invoices</a>
+                <a href="#" onclick="showPayments()">Payments</a>
+                <a href="#" onclick="showReports()">Reports</a>
+                <a href="#" onclick="showBudget()">Budget</a>
+            </nav>
+        </aside>
+
+        <div class="content">
+
+            <header>
+    <div>
+        <h1>Port Terminal Operations</h1>
+        <p>Container Yard & Terminal Management System</p>
+    </div>
+
+    <div class="system-status">
+        <span class="status-dot"></span>
+        System Online
+    </div>
+</header>
+
+            <main>
+
+    <section class="welcome">
+        <div>
+            <h2>Welcome to PortOps</h2>
+            <p>Monitor container yard operations, crane dispatch, billing and terminal finances from one dashboard.</p>
+        </div>
+
+        <div class="welcome-info">
+            <strong>Operations Center</strong>
+            <span>Terminal Management</span>
+        </div>
+    </section>
+
+
+    <section class="dashboard">
+
+        <div class="card">
+            <h2>Shipping Lines</h2>
+            <p id="shippingLineCount">Loading...</p>
+            <span>Active customers</span>
+        </div>
+
+        <div class="card">
+            <h2>Containers</h2>
+            <p id="containerCount">Loading...</p>
+            <span>Yard containers</span>
+        </div>
+
+        <div class="card">
+            <h2>Available Cranes</h2>
+            <p id="craneCount">Loading...</p>
+            <span>Ready for dispatch</span>
+        </div>
+
+        <div class="card">
+            <h2>Vendors</h2>
+            <p id="vendorCount">Loading...</p>
+            <span>Registered vendors</span>
+        </div>
+
+    </section>
+
+
+    <section class="operations">
+
+        <div class="operations-header">
+            <div>
+                <h2>Recent Operations</h2>
+                <p>Latest terminal activities</p>
+            </div>
+        </div>
+
+        <div class="operation-list">
+
+            <div class="operation-item">
+                <div class="operation-icon">📦</div>
+                <div>
+                    <strong>Container Processing</strong>
+                    <span>Container yard activity</span>
+                </div>
+                <b>Active</b>
+            </div>
+
+            <div class="operation-item">
+                <div class="operation-icon">🏗️</div>
+                <div>
+                    <strong>Crane Dispatch</strong>
+                    <span>Automated crane assignment</span>
+                </div>
+                <b>Running</b>
+            </div>
+
+            <div class="operation-item">
+                <div class="operation-icon">💰</div>
+                <div>
+                    <strong>Terminal Billing</strong>
+                    <span>Customer invoice processing</span>
+                </div>
+                <b>Completed</b>
+            </div>
+
+            <div class="operation-item">
+                <div class="operation-icon">🚢</div>
+                <div>
+                    <strong>Shipping Line Operations</strong>
+                    <span>Customer terminal services</span>
+                </div>
+                <b>Active</b>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="quick-actions">
+
+        <h2>Quick Actions</h2>
+
+        <div class="action-grid">
+            <button onclick="showContainers()">📦 View Containers</button>
+            <button onclick="showCranes()">🏗️ View Cranes</button>
+            <button onclick="showInvoices()">🧾 View Invoices</button>
+            <button onclick="showReports()">📊 View Reports</button>
+        </div>
+
+    </section>
+
+
+    <section class="reports">
+
+        <h2>Financial Reports</h2>
+
+        <div class="report-grid">
+
+            <div class="report-card">
+
+                <div class="report-title">
+                    <h3>Profit & Loss</h3>
+                    <span>Current Financial Position</span>
+                </div>
+
+                <pre id="profitLoss">Loading...</pre>
+
+            </div>
+
+
+            <div class="report-card">
+
+                <div class="report-title">
+                    <h3>Balance Sheet</h3>
+                    <span>Assets & Liabilities</span>
+                </div>
+
+                <pre id="balanceSheet">Loading...</pre>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
