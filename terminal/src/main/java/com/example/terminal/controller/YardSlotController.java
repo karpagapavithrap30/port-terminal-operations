@@ -28,6 +28,14 @@ public class YardSlotController {
 
     @PostMapping
     public YardSlot createSlot(@RequestBody YardSlot slot) {
+        if (slot.getStatus() == null || slot.getStatus().trim().isEmpty()) {
+            slot.setStatus("AVAILABLE");
+        }
         return repository.save(slot);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteSlot(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
     }
 }

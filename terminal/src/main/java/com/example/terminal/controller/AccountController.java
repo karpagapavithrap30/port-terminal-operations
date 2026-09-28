@@ -30,4 +30,9 @@ public class AccountController {
     public Account createAccount(@RequestBody Account account) {
         return repository.save(account);
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteAccount(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
+    }
 }

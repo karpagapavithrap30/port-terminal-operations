@@ -12,7 +12,7 @@ import com.example.terminal.model.Vendor;
 import com.example.terminal.repository.VendorRepository;
 
 @RestController
-@RequestMapping("/api/vendors")
+@RequestMapping({"/api/vendors", "/api/port/vendors"})
 public class VendorController {
 
     private final VendorRepository repository;
@@ -29,5 +29,10 @@ public class VendorController {
     @PostMapping
     public Vendor createVendor(@RequestBody Vendor vendor) {
         return repository.save(vendor);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteVendor(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
     }
 }

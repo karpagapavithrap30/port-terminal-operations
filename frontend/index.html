@@ -1,196 +1,1041 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Port Terminal Operations</title>
+    <title>Port Terminal Operations & Automated Crane Dispatch</title>
     <link rel="icon" href="data:,">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
+    <!-- AUTHENTICATION / LOGIN SCREEN -->
+    <div id="auth-screen">
+        <div class="auth-container">
+
+            <!-- Banner Side -->
+            <div class="auth-banner">
+                <div class="auth-banner-content">
+                    <div class="auth-brand">
+                        <span class="auth-brand-icon">⚓</span>
+                        <span>PortOps™ Terminal</span>
+                    </div>
+
+                    <div class="auth-hero-title">
+                        <h2>Smart Terminal & Yard Operations Console</h2>
+                        <p>Automated berth allocation, real-time crane dispatches, TEU tracking, & double-entry port
+                            ledgers.</p>
+
+                        <div class="auth-stats-grid">
+                            <div class="auth-stat-card">
+                                <div class="stat-val">99.9%</div>
+                                <div class="stat-lbl">Uptime</div>
+                            </div>
+                            <div class="auth-stat-card">
+                                <div class="stat-val">Auto</div>
+                                <div class="stat-lbl">Crane Sync</div>
+                            </div>
+                            <div class="auth-stat-card">
+                                <div class="stat-val">Live</div>
+                                <div class="stat-lbl">Financials</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Side -->
+            <div class="auth-form-side">
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tab-login" onclick="switchAuthTab('login')">🔑 Sign
+                        In</button>
+                    <button class="auth-tab-btn" id="tab-register" onclick="switchAuthTab('register')">📝 Create
+                        Account</button>
+                </div>
+
+                <!-- Quick Demo Login Bar -->
+                <div class="quick-demo-section" id="quick-demo-box">
+                    <div class="quick-demo-title">⚡ Quick Demo Login</div>
+                    <div class="quick-demo-pills">
+                        <button type="button" class="demo-pill" onclick="fillDemoUser('admin', 'admin123')">👑
+                            Admin</button>
+                        <button type="button" class="demo-pill" onclick="fillDemoUser('yardmanager', 'yard123')">🏗️
+                            Yard Mgr</button>
+                        <button type="button" class="demo-pill" onclick="fillDemoUser('finance', 'finance123')">💰
+                            Finance</button>
+                        <button type="button" class="demo-pill" onclick="fillDemoUser('shipping', 'shipping123')">🚢
+                            Carrier</button>
+                    </div>
+                </div>
+
+                <div id="auth-alert" class="auth-alert hidden"></div>
+
+                <!-- LOGIN FORM -->
+                <form id="form-login" class="auth-form" onsubmit="handleLoginSubmit(event)">
+                    <div class="auth-header-text">
+                        <h3>Welcome Back</h3>
+                        <p>Sign in with your port terminal credentials</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="login-username">Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="login-username" class="auth-input" placeholder="e.g. admin" required
+                                value="admin">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="login-password" class="auth-input" placeholder="••••••••"
+                                required value="admin123">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="login-submit-btn" class="auth-btn">
+                        <span>Sign In to Terminal</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="form-register" class="auth-form hidden" onsubmit="handleRegisterSubmit(event)">
+                    <div class="auth-header-text">
+                        <h3>Register User Account</h3>
+                        <p>Grant access to port terminal operations console</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-fullname">Full Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📛</span>
+                            <input type="text" id="reg-fullname" class="auth-input" placeholder="Capt. Alex Mercer"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📧</span>
+                            <input type="email" id="reg-email" class="auth-input" placeholder="alex.mercer@portops.com"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-username">Desired Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="reg-username" class="auth-input" placeholder="amercer" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="reg-password" class="auth-input" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-role">Role Designation</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🛡️</span>
+                            <select id="reg-role" class="auth-select" required>
+                                <option value="ADMIN">Terminal Administrator</option>
+                                <option value="YARD_MANAGER">Yard & Crane Controller</option>
+                                <option value="FINANCE_OFFICER">Financial Ledger Officer</option>
+                                <option value="SHIPPING_LINE_AGENT">Shipping Line Representative</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="reg-submit-btn" class="auth-btn">
+                        <span>Create Account</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
     <div class="app">
 
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo">
-                ⚓
-                <span>PortOps</span>
+                <span class="logo-icon">⚓</span>
+                <span>PortOps Terminal</span>
             </div>
 
             <nav>
-                <a href="#" class="active">Dashboard</a>
-                <a href="#" onclick="showShippingLines()">Shipping Lines</a>
-                <a href="#" onclick="showContainers()">Containers</a>
-                <a href="#" onclick="showYardSlots()">Yard Slots</a>
-                <a href="#" onclick="showCranes()">Cranes</a>
-                <a href="#" onclick="showPurchaseOrders()">Purchase Orders</a>
-                <a href="#" onclick="showSalesOrders()">Sales Orders</a>
-                <a href="#" onclick="showInvoices()">Invoices</a>
-                <a href="#" onclick="showPayments()">Payments</a>
-                <a href="#" onclick="showReports()">Reports</a>
-                <a href="#" onclick="showBudget()">Budget</a>
+                <div class="nav-category">Main Console</div>
+                <a href="#" id="nav-dashboard" class="active" onclick="navigateTo('dashboard')"><span
+                        class="nav-icon">📊</span> Dashboard</a>
+
+                <div class="nav-category">Yard & Masters</div>
+                <a href="#" id="nav-containers" onclick="navigateTo('containers')"><span class="nav-icon">📦</span>
+                    Containers</a>
+                <a href="#" id="nav-yardSlots" onclick="navigateTo('yardSlots')"><span class="nav-icon">🧩</span> Yard
+                    Slots</a>
+                <a href="#" id="nav-cranes" onclick="navigateTo('cranes')"><span class="nav-icon">🏗️</span> Cranes</a>
+                <a href="#" id="nav-craneDispatch" onclick="navigateTo('craneDispatch')"><span class="nav-icon">⚡</span>
+                    Crane Dispatch</a>
+                <a href="#" id="nav-shippingLines" onclick="navigateTo('shippingLines')"><span
+                        class="nav-icon">🚢</span> Shipping Lines</a>
+                <a href="#" id="nav-vendors" onclick="navigateTo('vendors')"><span class="nav-icon">🏢</span>
+                    Vendors</a>
+
+                <div class="nav-category">Purchases & Sales</div>
+                <a href="#" id="nav-purchaseOrders" onclick="navigateTo('purchaseOrders')"><span
+                        class="nav-icon">🛒</span> Purchase Orders</a>
+                <a href="#" id="nav-vendorBills" onclick="navigateTo('vendorBills')"><span class="nav-icon">🧾</span>
+                    Vendor Bills</a>
+                <a href="#" id="nav-vendorPayments" onclick="navigateTo('vendorPayments')"><span
+                        class="nav-icon">💳</span> Vendor Payments</a>
+                <a href="#" id="nav-salesOrders" onclick="navigateTo('salesOrders')"><span class="nav-icon">📋</span>
+                    Sales Orders</a>
+                <a href="#" id="nav-customerInvoices" onclick="navigateTo('customerInvoices')"><span
+                        class="nav-icon">📄</span> Customer Invoices</a>
+                <a href="#" id="nav-customerPayments" onclick="navigateTo('customerPayments')"><span
+                        class="nav-icon">💰</span> Customer Payments</a>
+
+                <div class="nav-category">Accounting & Reports</div>
+                <a href="#" id="nav-accounts" onclick="navigateTo('accounts')"><span class="nav-icon">🗂️</span> Chart
+                    of Accounts</a>
+                <a href="#" id="nav-journalEntries" onclick="navigateTo('journalEntries')"><span
+                        class="nav-icon">📖</span> Journal Entries</a>
+                <a href="#" id="nav-profitLoss" onclick="navigateTo('profitLoss')"><span class="nav-icon">📈</span>
+                    Profit & Loss</a>
+                <a href="#" id="nav-balanceSheet" onclick="navigateTo('balanceSheet')"><span class="nav-icon">⚖️</span>
+                    Balance Sheet</a>
+                <a href="#" id="nav-budget" onclick="navigateTo('budget')"><span class="nav-icon">🎯</span> Budget
+                    Management</a>
+                <a href="#" id="nav-budgetVariance" onclick="navigateTo('budgetVariance')"><span
+                        class="nav-icon">📊</span> Budget Variance</a>
             </nav>
         </aside>
 
         <div class="content">
 
             <header>
-    <div>
-        <h1>Port Terminal Operations</h1>
-        <p>Container Yard & Terminal Management System</p>
-    </div>
+                <div>
+                    <h1 id="header-title">Port Terminal Operations</h1>
+                    <p id="header-subtitle">Container Yard & Automated Crane Dispatch Operations System</p>
+                </div>
 
-    <div class="system-status">
-        <span class="status-dot"></span>
-        System Online
-    </div>
-</header>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="system-status">
+                        <span class="status-dot"></span>
+                        System Active
+                    </div>
+
+                    <div class="user-header-profile" id="user-header-profile">
+                        <div class="user-avatar" id="header-user-avatar">AM</div>
+                        <div class="user-info-text">
+                            <span class="user-name" id="header-user-name">Capt. Alex Mercer</span>
+                            <span class="user-role-badge" id="header-user-role">ADMIN</span>
+                        </div>
+                        <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+                    </div>
+                </div>
+            </header>
+
+            <div id="toast-message" class="toast hidden"></div>
 
             <main>
 
-    <section class="welcome">
-        <div>
-            <h2>Welcome to PortOps</h2>
-            <p>Monitor container yard operations, crane dispatch, billing and terminal finances from one dashboard.</p>
-        </div>
+                <!-- 1. PROFESSIONAL DASHBOARD COMMAND CENTER -->
+                <section id="section-dashboard" class="view-section">
+                    
+                    <!-- Welcome Hero Header Bar -->
+                    <div class="welcome">
+                        <div>
+                            <h2>Port Operations & Terminal Command Center</h2>
+                            <p>Real-time automated tracking of yard slots, crane dispatches, terminal billing & financial ledgers.</p>
+                        </div>
+                        <div class="welcome-info">
+                            <strong id="dashboard-clock">Live Operations Hub</strong>
+                            <span>Active Berth & Yard Control</span>
+                        </div>
+                    </div>
 
-        <div class="welcome-info">
-            <strong>Operations Center</strong>
-            <span>Terminal Management</span>
-        </div>
-    </section>
+                    <!-- 8 KPI Metrics Cards -->
+                    <div class="dashboard-grid">
+                        <div class="card card-accent-blue">
+                            <div class="card-header-row">
+                                <div class="card-icon">📦</div>
+                                <span class="kpi-trend up">↑ Live</span>
+                            </div>
+                            <h2>Total Containers</h2>
+                            <p id="kpi-containers">...</p>
+                            <span>Yard & Processed TEUs</span>
+                        </div>
+                        <div class="card card-accent-green">
+                            <div class="card-header-row">
+                                <div class="card-icon">🧩</div>
+                                <span class="kpi-trend neutral">Zone A & B</span>
+                            </div>
+                            <h2>Available Yard Slots</h2>
+                            <p id="kpi-yardSlots">...</p>
+                            <span>Ready for Ingress</span>
+                        </div>
+                        <div class="card card-accent-amber">
+                            <div class="card-header-row">
+                                <div class="card-icon">🏗️</div>
+                                <span class="kpi-trend active">Ready</span>
+                            </div>
+                            <h2>Available Cranes</h2>
+                            <p id="kpi-cranes">...</p>
+                            <span>Ready for Dispatch</span>
+                        </div>
+                        <div class="card card-accent-red">
+                            <div class="card-header-row">
+                                <div class="card-icon">🧾</div>
+                                <span class="kpi-trend warn">Pending</span>
+                            </div>
+                            <h2>Pending Invoices</h2>
+                            <p id="kpi-pendingInvoices">...</p>
+                            <span>Unpaid Customer Receivables</span>
+                        </div>
+                        <div class="card card-accent-teal">
+                            <div class="card-header-row">
+                                <div class="card-icon">💰</div>
+                                <span class="kpi-trend up">↑ Revenue</span>
+                            </div>
+                            <h2>Total Revenue</h2>
+                            <p id="kpi-totalRevenue">₹0</p>
+                            <span>Handling & Demurrage</span>
+                        </div>
+                        <div class="card card-accent-rose">
+                            <div class="card-header-row">
+                                <div class="card-icon">💸</div>
+                                <span class="kpi-trend down">Managed</span>
+                            </div>
+                            <h2>Total Expenses</h2>
+                            <p id="kpi-totalExpenses">₹0</p>
+                            <span>Fuel & Maintenance</span>
+                        </div>
+                        <div class="card card-accent-emerald">
+                            <div class="card-header-row">
+                                <div class="card-icon">📈</div>
+                                <span class="kpi-trend up">Positive</span>
+                            </div>
+                            <h2>Net Profit</h2>
+                            <p id="kpi-netProfit">₹0</p>
+                            <span>Operating Net Margin</span>
+                        </div>
+                        <div class="card card-accent-indigo">
+                            <div class="card-header-row">
+                                <div class="card-icon">🎯</div>
+                                <span class="kpi-trend neutral">Favorable</span>
+                            </div>
+                            <h2>Budget Variance</h2>
+                            <p id="kpi-budgetVariance">₹0</p>
+                            <span>Budget - Actual Spend</span>
+                        </div>
+                    </div>
 
+                    <!-- Interactive Analytics Charts Grid -->
+                    <div class="analytics-row">
+                        <!-- Chart 1: Financial & Revenue Performance -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div>
+                                    <h3>Financial & Revenue Trends</h3>
+                                    <p>Monthly Terminal Handling Revenue vs Operational Expenses</p>
+                                </div>
+                                <span class="chart-badge">Live Analytics</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-financials"></canvas>
+                            </div>
+                        </div>
 
-    <section class="dashboard">
+                        <!-- Chart 2: Yard Slot Occupancy & Fleet Allocation -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <div>
+                                    <h3>Yard & Fleet Capacity</h3>
+                                    <p>Slot Utilization & Crane Status</p>
+                                </div>
+                                <span class="chart-badge green">Yard Control</span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-capacity"></canvas>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="card">
-            <h2>Shipping Lines</h2>
-            <p id="shippingLineCount">Loading...</p>
-            <span>Active customers</span>
-        </div>
+                    <!-- Live Terminal Activity Log & Quick Action Command Bar -->
+                    <div class="dashboard-bottom-grid">
+                        
+                        <!-- Live Activity Feed -->
+                        <div class="activity-card">
+                            <div class="chart-header">
+                                <div>
+                                    <h3>Live Terminal Activity Stream</h3>
+                                    <p>Automated events: Ingress, Crane Allocation, and Financial Receipts</p>
+                                </div>
+                                <button class="btn-sm" onclick="loadDashboard()">🔄 Refresh Stream</button>
+                            </div>
+                            <div class="activity-list" id="dashboard-activity-stream">
+                                <div class="activity-item">
+                                    <div class="act-icon icon-blue">📦</div>
+                                    <div class="act-body">
+                                        <strong>Container Ingress Registered: CONT-90812</strong>
+                                        <span>Yard Slot A02 assigned • Shipping Line: Maersk Line</span>
+                                    </div>
+                                    <span class="act-time">2 mins ago</span>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="act-icon icon-amber">🏗️</div>
+                                    <div class="act-body">
+                                        <strong>Automated Crane Dispatch: CRANE-01</strong>
+                                        <span>Gantry Crane assigned to Slot A02 for vessel unloading</span>
+                                    </div>
+                                    <span class="act-time">10 mins ago</span>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="act-icon icon-green">💰</div>
+                                    <div class="act-body">
+                                        <strong>Customer Payment Received: ₹5,000</strong>
+                                        <span>Invoice INV-1002 settled by MSC Mediterranean</span>
+                                    </div>
+                                    <span class="act-time">45 mins ago</span>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="card">
-            <h2>Containers</h2>
-            <p id="containerCount">Loading...</p>
-            <span>Yard containers</span>
-        </div>
+                        <!-- Quick Actions Bar -->
+                        <div class="quick-actions-card">
+                            <div class="chart-header">
+                                <div>
+                                    <h3>Quick Operations Command</h3>
+                                    <p>Fast-track operational workflows</p>
+                                </div>
+                            </div>
+                            <div class="quick-cmd-list">
+                                <button class="quick-cmd-btn" onclick="navigateTo('containers')">
+                                    <span class="cmd-icon">📦</span>
+                                    <div class="cmd-text">
+                                        <strong>Container Ingress / Pickup</strong>
+                                        <span>Register TEU ingress or discharge</span>
+                                    </div>
+                                </button>
+                                <button class="quick-cmd-btn" onclick="navigateTo('craneDispatch')">
+                                    <span class="cmd-icon">🏗️</span>
+                                    <div class="cmd-text">
+                                        <strong>Automatic Crane Dispatch</strong>
+                                        <span>Trigger nearest crane assignment</span>
+                                    </div>
+                                </button>
+                                <button class="quick-cmd-btn" onclick="navigateTo('customerInvoices')">
+                                    <span class="cmd-icon">🧾</span>
+                                    <div class="cmd-text">
+                                        <strong>Create Customer Invoice</strong>
+                                        <span>Generate handling & demurrage bill</span>
+                                    </div>
+                                </button>
+                                <button class="quick-cmd-btn" onclick="navigateTo('purchaseOrders')">
+                                    <span class="cmd-icon">🛒</span>
+                                    <div class="cmd-text">
+                                        <strong>Issue Purchase Order</strong>
+                                        <span>Purchase diesel fuel & equipment</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
 
-        <div class="card">
-            <h2>Available Cranes</h2>
-            <p id="craneCount">Loading...</p>
-            <span>Ready for dispatch</span>
-        </div>
+                    </div>
 
-        <div class="card">
-            <h2>Vendors</h2>
-            <p id="vendorCount">Loading...</p>
-            <span>Registered vendors</span>
-        </div>
+                </section>
 
-    </section>
+                <!-- 2. SHIPPING LINES -->
+                <section id="section-shippingLines" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Shipping Line Master</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-shippingLine')">+ Add Shipping
+                            Line</button>
+                    </div>
 
+                    <form id="form-shippingLine" class="card-form hidden" onsubmit="handleCreateShippingLine(event)">
+                        <h3>Add New Shipping Line</h3>
+                        <div class="form-row">
+                            <input type="text" id="sl-name" placeholder="Shipping Line Name (e.g. Maersk Line)"
+                                required>
+                            <input type="text" id="sl-contact" placeholder="Contact Person">
+                            <input type="email" id="sl-email" placeholder="Email Address">
+                            <input type="text" id="sl-phone" placeholder="Phone Number">
+                        </div>
+                        <button type="submit" class="btn-submit">Save Shipping Line</button>
+                    </form>
 
-    <section class="operations">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Shipping Line Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-shippingLines"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-        <div class="operations-header">
-            <div>
-                <h2>Recent Operations</h2>
-                <p>Latest terminal activities</p>
-            </div>
-        </div>
+                <!-- 3. VENDORS -->
+                <section id="section-vendors" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Vendor Master</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-vendor')">+ Add Vendor</button>
+                    </div>
 
-        <div class="operation-list">
+                    <form id="form-vendor" class="card-form hidden" onsubmit="handleCreateVendor(event)">
+                        <h3>Add New Vendor</h3>
+                        <div class="form-row">
+                            <input type="text" id="vendor-name" placeholder="Vendor Name (e.g. Gulf Fuel Supplies Ltd)"
+                                required>
+                            <input type="text" id="vendor-contact" placeholder="Contact Person">
+                            <input type="email" id="vendor-email" placeholder="Email Address">
+                            <input type="text" id="vendor-phone" placeholder="Phone Number">
+                        </div>
+                        <button type="submit" class="btn-submit">Save Vendor</button>
+                    </form>
 
-            <div class="operation-item">
-                <div class="operation-icon">📦</div>
-                <div>
-                    <strong>Container Processing</strong>
-                    <span>Container yard activity</span>
-                </div>
-                <b>Active</b>
-            </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Vendor Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-vendors"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <div class="operation-item">
-                <div class="operation-icon">🏗️</div>
-                <div>
-                    <strong>Crane Dispatch</strong>
-                    <span>Automated crane assignment</span>
-                </div>
-                <b>Running</b>
-            </div>
+                <!-- 4. CONTAINERS -->
+                <section id="section-containers" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Container Ingress & Demurrage Calculation</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-container')">+ Register Ingress</button>
+                    </div>
 
-            <div class="operation-item">
-                <div class="operation-icon">💰</div>
-                <div>
-                    <strong>Terminal Billing</strong>
-                    <span>Customer invoice processing</span>
-                </div>
-                <b>Completed</b>
-            </div>
+                    <form id="form-container" class="card-form hidden" onsubmit="handleCreateContainer(event)">
+                        <h3>Container Ingress Registration</h3>
+                        <div class="form-row">
+                            <input type="text" id="cnt-number" placeholder="Container No (e.g. MSCU1234567)" required>
+                            <select id="cnt-shippingLine" required>
+                                <option value="">-- Select Shipping Line --</option>
+                            </select>
+                            <select id="cnt-yardSlot" required>
+                                <option value="">-- Select Yard Slot --</option>
+                            </select>
+                            <select id="cnt-size">
+                                <option value="20ft">20ft Standard Container</option>
+                                <option value="40ft">40ft High Cube Container</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Container Ingress</button>
+                    </form>
 
-            <div class="operation-item">
-                <div class="operation-icon">🚢</div>
-                <div>
-                    <strong>Shipping Line Operations</strong>
-                    <span>Customer terminal services</span>
-                </div>
-                <b>Active</b>
-            </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Container No</th>
+                                    <th>Shipping Line</th>
+                                    <th>Yard Slot</th>
+                                    <th>Size</th>
+                                    <th>Entry Time</th>
+                                    <th>Pickup Time</th>
+                                    <th>Dwell Time</th>
+                                    <th>Demurrage Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-containers"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-        </div>
+                <!-- 5. YARD SLOTS -->
+                <section id="section-yardSlots" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Yard Slot Management</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-yardSlot')">+ Create Yard Slot</button>
+                    </div>
 
-    </section>
+                    <form id="form-yardSlot" class="card-form hidden" onsubmit="handleCreateYardSlot(event)">
+                        <h3>Create Yard Slot</h3>
+                        <div class="form-row">
+                            <input type="text" id="slot-code" placeholder="Slot Code (e.g. SLOT-C01)" required>
+                            <input type="text" id="slot-zone" placeholder="Zone (e.g. Zone C)" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Yard Slot</button>
+                    </form>
 
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Slot Code</th>
+                                    <th>Zone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-yardSlots"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-    <section class="quick-actions">
+                <!-- 6. CRANES -->
+                <section id="section-cranes" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Crane Master</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-crane')">+ Add Crane</button>
+                    </div>
 
-        <h2>Quick Actions</h2>
+                    <form id="form-crane" class="card-form hidden" onsubmit="handleCreateCrane(event)">
+                        <h3>Add New Crane</h3>
+                        <div class="form-row">
+                            <input type="text" id="crane-code" placeholder="Crane Code (e.g. CRANE-03)" required>
+                            <select id="crane-type">
+                                <option value="Gantry Crane">Gantry Crane</option>
+                                <option value="Reach Stacker">Reach Stacker</option>
+                                <option value="Quay Crane">Quay Crane</option>
+                            </select>
+                            <input type="text" id="crane-zone" placeholder="Current Zone (e.g. Zone A)">
+                        </div>
+                        <button type="submit" class="btn-submit">Save Crane</button>
+                    </form>
 
-        <div class="action-grid">
-            <button onclick="showContainers()">📦 View Containers</button>
-            <button onclick="showCranes()">🏗️ View Cranes</button>
-            <button onclick="showInvoices()">🧾 View Invoices</button>
-            <button onclick="showReports()">📊 View Reports</button>
-        </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Crane Code</th>
+                                    <th>Type</th>
+                                    <th>Zone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-cranes"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-    </section>
+                <!-- 7. CRANE DISPATCH -->
+                <section id="section-craneDispatch" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Automatic Crane Dispatch</h2>
+                        <button class="btn-primary" onclick="handleAutoCraneDispatch()">⚡ Auto Dispatch Available
+                            Crane</button>
+                    </div>
 
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dispatch ID</th>
+                                    <th>Crane Reference</th>
+                                    <th>Container Reference</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-craneDispatch"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-    <section class="reports">
+                <!-- 8. PURCHASE ORDERS -->
+                <section id="section-purchaseOrders" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Purchase Orders</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-purchaseOrder')">+ New Purchase
+                            Order</button>
+                    </div>
 
-        <h2>Financial Reports</h2>
+                    <form id="form-purchaseOrder" class="card-form hidden" onsubmit="handleCreatePurchaseOrder(event)">
+                        <h3>Create Purchase Order</h3>
+                        <div class="form-row">
+                            <select id="po-vendor" required>
+                                <option value="">-- Select Vendor --</option>
+                            </select>
+                            <input type="text" id="po-item" placeholder="Item (e.g. Crane Diesel Fuel)" required>
+                            <input type="number" id="po-qty" placeholder="Quantity" value="100" step="any" required>
+                            <input type="number" id="po-price" placeholder="Unit Price (₹)" value="90" step="any"
+                                required>
+                        </div>
+                        <button type="submit" class="btn-submit">Issue Purchase Order</button>
+                    </form>
 
-        <div class="report-grid">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>PO ID</th>
+                                    <th>Vendor</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-purchaseOrders"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <div class="report-card">
+                <!-- 9. VENDOR BILLS -->
+                <section id="section-vendorBills" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Vendor Bills</h2>
+                    </div>
 
-                <div class="report-title">
-                    <h3>Profit & Loss</h3>
-                    <span>Current Financial Position</span>
-                </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bill ID</th>
+                                    <th>PO Reference</th>
+                                    <th>Vendor</th>
+                                    <th>Item</th>
+                                    <th>Bill Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-vendorBills"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-                <pre id="profitLoss">Loading...</pre>
+                <!-- 10. VENDOR PAYMENTS -->
+                <section id="section-vendorPayments" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Vendor Payments</h2>
+                    </div>
 
-            </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Bill Reference</th>
+                                    <th>Vendor</th>
+                                    <th>Paid Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-vendorPayments"></tbody>
+                        </table>
+                    </div>
+                </section>
 
+                <!-- 11. SALES ORDERS -->
+                <section id="section-salesOrders" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Sales Orders</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-salesOrder')">+ New Sales Order</button>
+                    </div>
 
-            <div class="report-card">
+                    <form id="form-salesOrder" class="card-form hidden" onsubmit="handleCreateSalesOrder(event)">
+                        <h3>Create Sales Order</h3>
+                        <div class="form-row">
+                            <select id="so-shippingLine" required>
+                                <option value="">-- Select Shipping Line --</option>
+                            </select>
+                            <input type="text" id="so-service" placeholder="Service (e.g. Terminal Container Handling)"
+                                required>
+                            <input type="number" id="so-qty" placeholder="Quantity" value="1" required>
+                            <input type="number" id="so-price" placeholder="Unit Price (₹)" value="5000" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Create Sales Order</button>
+                    </form>
 
-                <div class="report-title">
-                    <h3>Balance Sheet</h3>
-                    <span>Assets & Liabilities</span>
-                </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sales Order ID</th>
+                                    <th>Shipping Line</th>
+                                    <th>Service</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-salesOrders"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-                <pre id="balanceSheet">Loading...</pre>
+                <!-- 12. CUSTOMER INVOICES -->
+                <section id="section-customerInvoices" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Customer Invoices</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-customerInvoice')">+ Direct
+                            Invoice</button>
+                    </div>
 
-            </div>
+                    <form id="form-customerInvoice" class="card-form hidden" onsubmit="handleCreateInvoice(event)">
+                        <h3>Generate Customer Invoice</h3>
+                        <div class="form-row">
+                            <select id="inv-shippingLine" required>
+                                <option value="">-- Select Shipping Line --</option>
+                            </select>
+                            <input type="number" id="inv-handling" placeholder="Handling Charges (₹)" value="5000"
+                                step="any">
+                            <input type="number" id="inv-demurrage" placeholder="Demurrage Charges (₹)" value="0"
+                                step="any">
+                        </div>
+                        <button type="submit" class="btn-submit">Generate Invoice</button>
+                    </form>
 
-        </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Invoice ID</th>
+                                    <th>SO Reference</th>
+                                    <th>Shipping Line</th>
+                                    <th>Handling Amount</th>
+                                    <th>Demurrage Amount</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-customerInvoices"></tbody>
+                        </table>
+                    </div>
+                </section>
 
-    </section>
+                <!-- 13. CUSTOMER PAYMENTS -->
+                <section id="section-customerPayments" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Customer Payments</h2>
+                    </div>
 
-</main>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Invoice Reference</th>
+                                    <th>Shipping Line</th>
+                                    <th>Amount Received</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-customerPayments"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 14. CHART OF ACCOUNTS -->
+                <section id="section-accounts" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Chart of Accounts</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-account')">+ Add Account</button>
+                    </div>
+
+                    <form id="form-account" class="card-form hidden" onsubmit="handleCreateAccount(event)">
+                        <h3>Add Account to Ledger</h3>
+                        <div class="form-row">
+                            <input type="text" id="acc-name" placeholder="Account Name (e.g. Bank, Fuel Expense)"
+                                required>
+                            <select id="acc-type">
+                                <option value="Asset">Asset</option>
+                                <option value="Liability">Liability</option>
+                                <option value="Revenue">Revenue</option>
+                                <option value="Expense">Expense</option>
+                                <option value="Equity">Equity</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Account</button>
+                    </form>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account ID</th>
+                                    <th>Account Name</th>
+                                    <th>Account Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-accounts"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 15. JOURNAL ENTRIES -->
+                <section id="section-journalEntries" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>General Journal & Ledger (Debit = Credit)</h2>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Entry ID</th>
+                                    <th>Transaction Type</th>
+                                    <th>Account Name</th>
+                                    <th>Debit Amount</th>
+                                    <th>Credit Amount</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-journalEntries"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 16. PROFIT & LOSS -->
+                <section id="section-profitLoss" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Profit & Loss Report</h2>
+                    </div>
+
+                    <div class="report-box">
+                        <div class="report-card-styled">
+                            <h3>Financial Statement: Profit & Loss</h3>
+                            <div class="report-row"><span>Terminal Handling Revenue:</span> <strong
+                                    id="pl-handling">₹0.00</strong></div>
+                            <div class="report-row"><span>Demurrage Revenue:</span> <strong
+                                    id="pl-demurrage">₹0.00</strong></div>
+                            <div class="report-row total"><span>Total Operating Revenue:</span> <strong
+                                    id="pl-totalRev">₹0.00</strong></div>
+                            <hr>
+                            <div class="report-row"><span>Fuel & Operational Expenses:</span> <strong
+                                    id="pl-expenses">₹0.00</strong></div>
+                            <div class="report-row total"><span>Total Terminal Expenses:</span> <strong
+                                    id="pl-totalExp">₹0.00</strong></div>
+                            <hr>
+                            <div class="report-row net-profit"><span>Net Profit:</span> <strong
+                                    id="pl-netProfit">₹0.00</strong></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 17. BALANCE SHEET -->
+                <section id="section-balanceSheet" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Balance Sheet Report</h2>
+                    </div>
+
+                    <div class="report-box">
+                        <div class="report-card-styled">
+                            <h3>Financial Position: Balance Sheet</h3>
+                            <div class="report-row"><span>Total Assets (Bank + Receivables):</span> <strong
+                                    id="bs-assets">₹0.00</strong></div>
+                            <div class="report-row"><span>Total Liabilities (Vendor Payables):</span> <strong
+                                    id="bs-liabilities">₹0.00</strong></div>
+                            <hr>
+                            <div class="report-row net-profit"><span>Total Equity / Net Capital:</span> <strong
+                                    id="bs-equity">₹0.00</strong></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 18. BUDGET MANAGEMENT -->
+                <section id="section-budget" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Analytic Accounts & Budget Management</h2>
+                        <button class="btn-primary" onclick="toggleForm('form-analytic')">+ Create Analytic
+                            Account</button>
+                    </div>
+
+                    <form id="form-analytic" class="card-form hidden" onsubmit="handleCreateAnalyticAccount(event)">
+                        <h3>Add Analytic Account / Cost Center</h3>
+                        <div class="form-row">
+                            <input type="text" id="analytic-name"
+                                placeholder="Cost Center Name (e.g. Terminal 2 Deepwater Yard)" required>
+                            <input type="number" id="analytic-budget" placeholder="Budget Amount (₹)" value="50000"
+                                step="any" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Analytic Account</button>
+                    </form>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account ID</th>
+                                    <th>Cost Center Name</th>
+                                    <th>Budget Allocated</th>
+                                    <th>Actual Spend</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-analyticAccounts"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 19. BUDGET VARIANCE -->
+                <section id="section-budgetVariance" class="view-section hidden">
+                    <div class="section-header">
+                        <h2>Budget Variance Analysis (Variance = Budget - Actual)</h2>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Variance ID</th>
+                                    <th>Cost Center Name</th>
+                                    <th>Budget Allocated</th>
+                                    <th>Actual Spend</th>
+                                    <th>Variance Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-budgetVariance"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
 
         </div>
 
@@ -199,4 +1044,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>

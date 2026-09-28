@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.terminal.model.BalanceSheetReport;
 import com.example.terminal.model.JournalEntry;
+import com.example.terminal.repository.BalanceSheetReportRepository;
 import com.example.terminal.repository.JournalEntryRepository;
 
 @RestController
@@ -14,13 +16,16 @@ import com.example.terminal.repository.JournalEntryRepository;
 public class BalanceSheetReportController {
 
     private final JournalEntryRepository journalRepository;
+    private final BalanceSheetReportRepository reportRepository;
 
-    public BalanceSheetReportController(JournalEntryRepository journalRepository) {
+    public BalanceSheetReportController(JournalEntryRepository journalRepository,
+                                       BalanceSheetReportRepository reportRepository) {
         this.journalRepository = journalRepository;
+        this.reportRepository = reportRepository;
     }
 
     @GetMapping("/balance-sheet")
-    public String getBalanceSheetReport() {
+    public BalanceSheetReport getBalanceSheetReport() {
 
         List<JournalEntry> entries = journalRepository.findAll();
 
@@ -29,27 +34,30 @@ public class BalanceSheetReportController {
         double payable = 0;
 
         for (JournalEntry entry : entries) {
+            String acc = entry.getAccountName();
+            if (acc == null) continue;
 
-            if (entry.getAccountName().equals("Bank")) {
+            if (acc.equalsIgnoreCase("Bank")) {
                 bankBalance += entry.getDebit();
                 bankBalance -= entry.getCredit();
-            }
-
-            if (entry.getAccountName().equals("Customer Receivable")) {
+            } else if (acc.equalsIgnoreCase("Customer Receivable")) {
                 receivable += entry.getDebit();
                 receivable -= entry.getCredit();
-            }
-
-            if (entry.getAccountName().equals("Vendor Payable")) {
+            } else if (acc.equalsIgnoreCase("Vendor Payable")) {
                 payable += entry.getCredit();
                 payable -= entry.getDebit();
             }
         }
 
-        double totalAssets = bankBalance + receivable;
-        double totalLiabilities = payable;
+        double totalAssets = Math.max(0, bankBalance) + Math.max(0, receivable);
+        double totalLiabilities = Math.max(0, payable);
+        double totalEquity = totalAssets - totalLiabilities;
 
-        return "Total Assets: ₹" + totalAssets
-                + "\nTotal Liabilities: ₹" + totalLiabilities;
+        BalanceSheetReport report = new BalanceSheetReport();
+        report.setTotalAssets(totalAssets);
+        report.setTotalLiabilities(totalLiabilities);
+        report.setTotalEquity(totalEquity);
+
+        return reportRepository.save(report);
     }
 }

@@ -28,6 +28,14 @@ public class CraneController {
 
     @PostMapping
     public Crane createCrane(@RequestBody Crane crane) {
+        if (crane.getStatus() == null || crane.getStatus().trim().isEmpty()) {
+            crane.setStatus("AVAILABLE");
+        }
         return repository.save(crane);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteCrane(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
     }
 }

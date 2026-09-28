@@ -12,7 +12,7 @@ import com.example.terminal.model.ShippingLine;
 import com.example.terminal.repository.ShippingLineRepository;
 
 @RestController
-@RequestMapping("/api/shipping-lines")
+@RequestMapping({"/api/shipping-lines", "/api/port/shipping-lines"})
 public class ShippingLineController {
 
     private final ShippingLineRepository repository;
@@ -29,5 +29,10 @@ public class ShippingLineController {
     @PostMapping
     public ShippingLine createShippingLine(@RequestBody ShippingLine shippingLine) {
         return repository.save(shippingLine);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteShippingLine(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
     }
 }

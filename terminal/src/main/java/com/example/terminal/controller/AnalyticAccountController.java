@@ -31,4 +31,9 @@ public class AnalyticAccountController {
             @RequestBody AnalyticAccount account) {
         return repository.save(account);
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public void deleteAccount(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        repository.deleteById(id);
+    }
 }

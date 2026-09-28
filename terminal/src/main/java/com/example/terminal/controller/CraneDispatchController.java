@@ -49,4 +49,19 @@ public class CraneDispatchController {
 
         return dispatchRepository.save(dispatch);
     }
+
+    @PutMapping("/{id}/complete")
+    public CraneDispatch completeDispatch(@PathVariable Long id) {
+        CraneDispatch dispatch = dispatchRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dispatch not found: " + id));
+
+        dispatch.setStatus("COMPLETED");
+        if (dispatch.getCraneId() != null) {
+            craneRepository.findById(dispatch.getCraneId()).ifPresent(crane -> {
+                crane.setStatus("AVAILABLE");
+                craneRepository.save(crane);
+            });
+        }
+        return dispatchRepository.save(dispatch);
+    }
 }
